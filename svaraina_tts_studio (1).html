@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVARAINA - Nusantara Voice Studio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        clay: {
+                            bg: '#48bda9',
+                            coral: '#ff665c',
+                            yellow: '#ffcc4d',
+                            mint: '#86dfce',
+                            navy: '#2e5675',
+                            peach: '#ff9871',
+                            light: '#f4f6f8',
+                        }
+                    },
+                    boxShadow: {
+                        'clay-active': 'inset 5px 5px 10px rgba(0,0,0,0.35), inset -3px -3px 8px rgba(255,255,255,0.4)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #48bda9;
+            color: #1e293b;
+            font-family: 'Nunito', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .decoration {
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+            background-repeat: no-repeat;
+            opacity: 0.8;
+            filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.2));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .deco-camera {
+            width: 150px; height: 120px;
+            background-image: url('Gemini_Generated_Image_qtyfqcqtyfqcqtyf.jpg');
+            background-size: 300%;
+            background-position: 50% 20%;
+            top: 5%; left: 2%;
+            animation-delay: 0s;
+        }
+        .deco-rainbow {
+            width: 150px; height: 120px;
+            background-image: url('Gemini_Generated_Image_qtyfqcqtyfqcqtyf.jpg');
+            background-size: 300%;
+            background-position: 95% 20%;
+            top: 10%; right: 2%;
+            animation-delay: 1s;
+        }
+        .deco-wayang {
+            width: 130px; height: 180px;
+            background-image: url('Gemini_Generated_Image_qtyfqcqtyfqcqtyf.jpg');
+            background-size: 300%;
+            background-position: 5% 85%;
+            bottom: 15%; left: 5%;
+            animation-delay: 2s;
+        }
+
+        .deco-flag {
+            width: 140px; height: 140px;
+            background-image: url('Gemini_Generated_Image_eijugveijugveiju.jpg');
+            background-size: 300%;
+            background-position: 5% 95%;
+            top: 40%; left: -3%;
+            animation-delay: 1.5s;
+        }
+        .deco-sun {
+            width: 120px; height: 120px;
+            background-image: url('Gemini_Generated_Image_eijugveijugveiju.jpg');
+            background-size: 300%;
+            background-position: 50% 15%;
+            bottom: 40%; right: -2%;
+            animation-delay: 0.5s;
+        }
+
+        .deco-globe {
+            width: 120px; height: 150px;
+            background-image: url('Gemini_Generated_Image_7pl7mx7pl7mx7pl7.jpg');
+            background-size: 300%;
+            background-position: 50% 15%;
+            bottom: 5%; right: 10%;
+            animation-delay: 2.5s;
+        }
+        .deco-mask {
+            width: 140px; height: 140px;
+            background-image: url('Gemini_Generated_Image_7pl7mx7pl7mx7pl7.jpg');
+            background-size: 300%;
+            background-position: 5% 55%;
+            top: 60%; right: 5%;
+            animation-delay: 0.8s;
+        }
+
+        .clay-panel {
+            border-radius: 1.25rem;
+            box-shadow: 
+                12px 12px 18px rgba(0, 0, 0, 0.45), 
+                -4px -4px 12px rgba(255, 255, 255, 0.2),
+                inset 4px 4px 8px rgba(255, 255, 255, 0.35),
+                inset -4px -4px 8px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            /* Tida ada opacity agar warna background solid */
+        }
+
+        .clay-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20c-11 0-20-9-20-20 11 0 20 9 20 20zm0 0c11 0 20 9 20 20-11 0-20-9-20-20zm0 0c-11 0-20 9-20 20 11 0 20-9 20-20zm0 0c11 0 20-9 20-20-11 0-20 9-20 20z' fill='none' stroke='%23000000' stroke-width='1.5'/%3E%3Ccircle cx='20' cy='20' r='5' fill='none' stroke='%23000000' stroke-width='1.5'/%3E%3C/svg%3E");
+            background-size: 40px 40px;
+            opacity: 0.06; /* Dikurangi lagi 20% dari 0.075 menjadi 0.06 */
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .clay-panel > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .clay-button {
+            border-radius: 0.875rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                6px 6px 10px rgba(0, 0, 0, 0.45), 
+                -2px -2px 8px rgba(255, 255, 255, 0.3),
+                inset 2px 2px 4px rgba(255, 255, 255, 0.5),
+                inset -2px -2px 4px rgba(0, 0, 0, 0.15);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .clay-button:active, .clay-button-active {
+            box-shadow: 
+                inset 6px 6px 12px rgba(0, 0, 0, 0.4),
+                inset -2px -2px 6px rgba(255, 255, 255, 0.4);
+            transform: translateY(2px);
+        }
+
+        .panel-coral { background-color: #ff665c; color: white; }
+        .panel-yellow { background-color: #ffcc4d; color: #333; }
+        .panel-mint { background-color: #86dfce; color: #2e5675; }
+        .panel-navy { background-color: #2e5675; color: white; }
+        .panel-peach { background-color: #ff9871; color: white; }
+        
+        .btn-light { background-color: #f4f6f8; color: #333; }
+        .btn-light:hover { background-color: #ffffff; }
+        .btn-dark { background-color: #2e5675; color: white; }
+        .btn-dark:hover { background-color: #37607a; }
+        .btn-yellow { background-color: #ffcc4d; color: #333; }
+        .btn-yellow:hover { background-color: #ffd666; }
+        .btn-coral { background-color: #ff665c; color: white; }
+
+        .chip-radio input[type="radio"] { display: none; }
+
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { 
+            background: rgba(0,0,0,0.15); 
+            border-radius: 10px; 
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); border: 2px solid transparent; background-clip: padding-box;}
+
+        .hero-textarea {
+            outline: none;
+            box-shadow: inset 6px 6px 12px rgba(0,0,0,0.25), inset -2px -2px 6px rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.08);
+            border-radius: 1rem;
+            padding: 1rem;
+            resize: none;
+            field-sizing: content;
+            min-height: 180px;
+            width: 100%;
+        }
+        .hero-textarea::placeholder { opacity: 0.6; color: inherit; }
+    </style>
+</head>
+<body>
+    <div class="decoration deco-camera"></div>
+    <div class="decoration deco-rainbow"></div>
+    <div class="decoration deco-wayang"></div>
+    <div class="decoration deco-flag"></div>
+    <div class="decoration deco-sun"></div>
+    <div class="decoration deco-globe"></div>
+    <div class="decoration deco-mask"></div>
+
+    <div id="root" class="flex-1 w-full max-w-7xl mx-auto flex flex-col gap-6 relative z-10"></div>
+
+    <script type="text/babel">
+        const CONFIG = {
+            languages: [
+                { id: 'id', label: 'Indonesia', panel: 'panel-mint' },
+                { id: 'su', label: 'Sunda', panel: 'panel-yellow' },
+                { id: 'bt', label: 'Batak', panel: 'panel-coral' },
+                { id: 'jv', label: 'Jawa', panel: 'panel-navy' },
+                { id: 'jt', label: 'Jawa Timur', panel: 'panel-peach' },
+                { id: 'mk', label: 'Makassar', panel: 'panel-coral' },
+                { id: 'pp', label: 'Papua', panel: 'panel-mint' },
+                { id: 'bl', label: 'Bali', panel: 'panel-yellow' }
+            ],
+            foreignLanguages: [
+                { id: 'en', label: 'Inggris', panel: 'panel-navy' },
+                { id: 'jp', label: 'Jepang', panel: 'panel-coral' },
+                { id: 'kr', label: 'Korea', panel: 'panel-peach' },
+                { id: 'fr', label: 'Prancis', panel: 'panel-mint' },
+                { id: 'nl', label: 'Belanda', panel: 'panel-yellow' },
+                { id: 'cn', label: 'China', panel: 'panel-navy' }
+            ],
+            voices: {
+                pria: [
+                    { id: 'arga', name: 'Arga', desc: 'Natural · Warm', geminiVoice: 'Algieba' },
+                    { id: 'bima', name: 'Bima', desc: 'Deep · Authoritative', geminiVoice: 'Orus' },
+                    { id: 'raka', name: 'Raka', desc: 'Calm · Storyteller', geminiVoice: 'Charon' }
+                ],
+                wanita: [
+                    { id: 'ayu', name: 'Ayu', desc: 'Natural · Warm', geminiVoice: 'Aoede' },
+                    { id: 'sekar', name: 'Sekar', desc: 'Soft · Poetic', geminiVoice: 'Vindemiatrix' },
+                    { id: 'laras', name: 'Laras', desc: 'Clear · Pro', geminiVoice: 'Kore' }
+                ]
+            },
+            vibes: [
+                { id: 'ceria', label: 'Ceria' },
+                { id: 'sedih', label: 'Sedih' },
+                { id: 'puitis', label: 'Puitis' },
+                { id: 'berwibawa', label: 'Berwibawa' },
+                { id: 'seram', label: 'Seram' }
+            ],
+            generationSteps: [
+                "ANALYZING TEXT",
+                "PRESERVING CONTEXT",
+                "APPLYING LANGUAGE & LOGAT",
+                "DIRECTING VOICE",
+                "RENDERING MP3"
+            ]
+        };
+
+        const Icon = {
+            Microphone: ({ className }) => (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                    <rect x="9" y="2" width="6" height="11" rx="3"></rect>
+                    <path d="M5 10v2a7 7 0 0 0 14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="22"></line>
+                    <line x1="8" y1="22" x2="16" y2="22"></line>
+                </svg>
+            ),
+            Megaphone: ({ className }) => (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                    <path d="M3 11l18-5v12L3 14v-3z"></path>
+                    <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path>
+                </svg>
+            ),
+            SoundWave: ({ className }) => (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                    <path d="M12 4v16"></path>
+                    <path d="M8 8v8"></path>
+                    <path d="M16 8v8"></path>
+                    <path d="M4 11v2"></path>
+                    <path d="M20 11v2"></path>
+                </svg>
+            ),
+            MusicNote: ({ className }) => (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                    <path d="M9 18V5l12-2v13"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                </svg>
+            ),
+            Play: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M8 5v14l11-7z"/></svg>,
+            Pause: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>,
+            Download: ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        };
+
+        const IntelligenceService = {
+            base64ToArrayBuffer: (base64) => {
+                const binaryString = window.atob(base64);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return bytes.buffer;
+            },
+            
+            pcmToWav: (pcm16, sampleRate) => {
+                const numChannels = 1;
+                const bytesPerSample = 2;
+                const blockAlign = numChannels * bytesPerSample;
+                const byteRate = sampleRate * blockAlign;
+                const dataSize = pcm16.length * bytesPerSample;
+                const buffer = new ArrayBuffer(44 + dataSize);
+                const view = new DataView(buffer);
+
+                const writeString = (view, offset, string) => {
+                    for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
+                };
+
+                writeString(view, 0, 'RIFF');
+                view.setUint32(4, 36 + dataSize, true);
+                writeString(view, 8, 'WAVE');
+                writeString(view, 12, 'fmt ');
+                view.setUint32(16, 16, true);
+                view.setUint16(20, 1, true); // PCM
+                view.setUint16(22, numChannels, true);
+                view.setUint32(24, sampleRate, true);
+                view.setUint32(28, byteRate, true);
+                view.setUint16(32, blockAlign, true);
+                view.setUint16(34, bytesPerSample * 8, true);
+                writeString(view, 36, 'data');
+                view.setUint32(40, dataSize, true);
+
+                let offset = 44;
+                for (let i = 0; i < pcm16.length; i++) {
+                    view.setInt16(offset, pcm16[i], true); // Little endian required by WAV
+                    offset += 2;
+                }
+                return new Blob([buffer], { type: 'audio/wav' });
+            },
+
+            generateRealAudio: async (text, config, langLabel, vibeLabel) => {
+                const apiKey = ""; // API key will be injected by the immersive canvas
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+                
+                const allVoices = [...CONFIG.voices.pria, ...CONFIG.voices.wanita];
+                const selectedVoice = allVoices.find(v => v.id === config.voiceId);
+                const voiceName = selectedVoice ? selectedVoice.geminiVoice : "Kore";
+                
+                const instruction = `Tolong bacakan teks berikut. Bawakan dengan bahasa atau logat ${langLabel}. Gunakan emosi/nada suara yang ${vibeLabel}. (Hanya bacakan teksnya saja, jangan beri komentar apa-apa)`;
+                
+                const payload = {
+                    contents: [{
+                        parts: [{ text: `${instruction}\n\nTeks:\n${text}` }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: voiceName }
+                            }
+                        }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error("Gagal menghubungi server suara.");
+                }
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                    const rateMatch = mimeType.match(/rate=(\d+)/);
+                    const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+                    
+                    const pcmData = IntelligenceService.base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = IntelligenceService.pcmToWav(pcm16, sampleRate);
+                    return URL.createObjectURL(wavBlob);
+                } else {
+                    throw new Error("Format audio tidak didukung dari server.");
+                }
+            }
+        };
+
+        const SectionHeader = ({ title, icon: IconCmp, subtitle }) => (
+            <div className="mb-4 flex items-center gap-3">
+                {IconCmp && <div className="p-2 bg-black/10 rounded-xl"><IconCmp className="w-5 h-5 opacity-80" /></div>}
+                <div>
+                    <h2 className="text-sm font-bold tracking-widest uppercase opacity-90">{title}</h2>
+                    {subtitle && <p className="text-xs font-semibold opacity-70 mt-0.5">{subtitle}</p>}
+                </div>
+            </div>
+        );
+
+        const Chip = ({ id, label, selected, onClick, variant = 'light' }) => {
+            const activeClass = selected ? `clay-button-active ${variant === 'dark' ? 'bg-yellow-400 text-gray-900' : 'bg-clay-yellow text-gray-900'}` : `clay-button ${variant === 'dark' ? 'btn-dark' : 'btn-light'}`;
+            return (
+                <label className={`chip-radio px-4 py-2 text-sm select-none text-center flex-1 sm:flex-none whitespace-nowrap ${activeClass}`}>
+                    <input type="radio" name="chipGroup" value={id} checked={selected} onChange={() => onClick(id)} />
+                    {label}
+                </label>
+            );
+        };
+
+        const AudioPlayer = ({ result, title }) => {
+            const [isPlaying, setIsPlaying] = React.useState(false);
+            const [progress, setProgress] = React.useState(0);
+            const audioRef = React.useRef(null);
+            const canvasRef = React.useRef(null);
+
+            const formatTime = (sec) => {
+                if (!sec || isNaN(sec)) return "00:00";
+                const m = Math.floor(sec / 60);
+                const s = Math.floor(sec % 60);
+                return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            React.useEffect(() => {
+                const canvas = canvasRef.current;
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width;
+                const height = canvas.height;
+                const bars = 80;
+                const barWidth = width / bars;
+                
+                const data = Array.from({length: bars}, (_, i) => Math.sin(i * 0.15) * 0.4 + 0.6 * Math.random());
+
+                const draw = () => {
+                    ctx.clearRect(0, 0, width, height);
+                    data.forEach((val, i) => {
+                        const x = i * barWidth;
+                        const barHeight = Math.max(4, val * height * 0.8);
+                        const y = (height - barHeight) / 2;
+                        const isPlayed = (i / bars) <= progress;
+                        
+                        ctx.fillStyle = isPlayed ? '#ff665c' : 'rgba(255, 255, 255, 0.4)';
+                        ctx.beginPath();
+                        ctx.roundRect(x + 1, y, barWidth - 2, barHeight, 4);
+                        ctx.fill();
+                    });
+                };
+                draw();
+            }, [progress]);
+
+            React.useEffect(() => {
+                const audio = audioRef.current;
+                if (!audio) return;
+
+                if (result && result.playbackRate) {
+                    audio.playbackRate = result.playbackRate;
+                }
+
+                const updateProgress = () => {
+                    if (audio.duration) setProgress(audio.currentTime / audio.duration);
+                };
+                audio.addEventListener('timeupdate', updateProgress);
+                audio.addEventListener('ended', () => setIsPlaying(false));
+                return () => {
+                    audio.removeEventListener('timeupdate', updateProgress);
+                    audio.removeEventListener('ended', () => setIsPlaying(false));
+                };
+            }, [result]);
+
+            const togglePlay = () => {
+                if (!audioRef.current) return;
+                isPlaying ? audioRef.current.pause() : audioRef.current.play();
+                setIsPlaying(!isPlaying);
+            };
+
+            if (!result) return null;
+
+            return (
+                <div className="mt-8 animate-[pulse_0.5s_ease-out]">
+                    <div className="clay-panel panel-mint p-6 flex flex-col md:flex-row items-center gap-6">
+                        <audio ref={audioRef} src={result.url} className="hidden" />
+                        
+                        <button onClick={togglePlay} className="w-16 h-16 rounded-xl clay-button btn-coral flex items-center justify-center flex-shrink-0">
+                            {isPlaying ? <Icon.Pause className="w-7 h-7" /> : <Icon.Play className="w-7 h-7 ml-1" />}
+                        </button>
+                        
+                        <div className="flex-1 w-full flex flex-col gap-2">
+                            <div className="flex justify-between items-end mb-1">
+                                <span className="text-sm font-bold opacity-90 truncate max-w-[200px] sm:max-w-xs">{title}</span>
+                                <span className="text-xs font-mono font-bold bg-black/10 px-2 py-1 rounded-lg">
+                                    {formatTime(audioRef.current?.currentTime)} / {formatTime(result.duration)}
+                                </span>
+                            </div>
+                            <canvas 
+                                ref={canvasRef} width="800" height="50" 
+                                className="w-full h-12 cursor-pointer bg-black/5 rounded-xl border-2 border-transparent hover:border-black/10 transition-colors"
+                                onClick={(e) => {
+                                    if(audioRef.current) {
+                                        const rect = canvasRef.current.getBoundingClientRect();
+                                        audioRef.current.currentTime = (e.clientX - rect.left) / rect.width * audioRef.current.duration;
+                                    }
+                                }}
+                            ></canvas>
+                        </div>
+
+                        <button 
+                            onClick={() => {
+                                const a = document.createElement('a');
+                                a.href = result.url;
+                                a.download = `${title.replace(/\s+/g, '_')}.mp3`;
+                                a.click();
+                            }}
+                            className="w-full md:w-auto px-6 py-4 clay-button btn-light font-bold text-sm tracking-wide uppercase flex items-center justify-center gap-2"
+                        >
+                            <Icon.Download className="w-5 h-5" /> MP3
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [narration, setNarration] = React.useState("");
+            
+            const [config, setConfig] = React.useState({
+                language: 'id',
+                voiceGender: 'wanita',
+                voiceId: 'sekar',
+                vibe: 'puitis',
+                tempo: 1.0
+            });
+            
+            const [isGenerating, setIsGenerating] = React.useState(false);
+            const [currentStep, setCurrentStep] = React.useState("");
+            const [audioResult, setAudioResult] = React.useState(null);
+            const [errorMsg, setErrorMsg] = React.useState("");
+            
+            const [history, setHistory] = React.useState([]);
+
+            const updateConfig = (key, value) => setConfig(prev => ({ ...prev, [key]: value }));
+
+            const handleGenerate = async () => {
+                if (!narration.trim() || isGenerating) return;
+                setIsGenerating(true);
+                setAudioResult(null);
+                setErrorMsg("");
+                
+                let stepIdx = 0;
+                setCurrentStep(CONFIG.generationSteps[0]);
+                const stepTimer = setInterval(() => {
+                    stepIdx++;
+                    setCurrentStep(CONFIG.generationSteps[stepIdx % CONFIG.generationSteps.length]);
+                }, 1200);
+                
+                try {
+                    const vibeLabel = CONFIG.vibes.find(v => v.id === config.vibe)?.label || 'Ceria';
+                    const langLabel = [...CONFIG.languages, ...CONFIG.foreignLanguages].find(l => l.id === config.language)?.label || 'Indonesia';
+                    
+                    const audioUrl = await IntelligenceService.generateRealAudio(narration.trim(), config, langLabel, vibeLabel);
+                    
+                    const tempAudio = new Audio(audioUrl);
+                    tempAudio.onloadedmetadata = () => {
+                        const duration = tempAudio.duration || 0;
+                        const finalDuration = duration / config.tempo; 
+                        
+                        const resultObj = { url: audioUrl, duration: duration, playbackRate: config.tempo };
+                        setAudioResult(resultObj);
+                        
+                        const title = narration.split('\n')[0].substring(0, 30) + "...";
+                        const voiceName = [...CONFIG.voices.pria, ...CONFIG.voices.wanita].find(v => v.id === config.voiceId)?.name;
+                        
+                        setHistory(prev => [{
+                            id: Date.now(),
+                            title: title,
+                            details: `${voiceName} · ${langLabel} · ${config.vibe}`,
+                            durationStr: `${Math.floor(finalDuration/60).toString().padStart(2,'0')}:${Math.floor(finalDuration%60).toString().padStart(2,'0')}`,
+                            result: resultObj
+                        }, ...prev]);
+                    };
+                } catch (error) {
+                    console.error("Generation error:", error);
+                    setErrorMsg("Mohon maaf, terjadi kesalahan pada server TTS. Pastikan koneksi stabil dan coba beberapa saat lagi.");
+                } finally {
+                    clearInterval(stepTimer);
+                    setIsGenerating(false);
+                    setCurrentStep("");
+                }
+            };
+
+            const loadHistoryItem = (item) => {
+                setAudioResult(item.result);
+            };
+
+            return (
+                <div className="flex-1 flex flex-col relative">
+                    
+                    <header className="py-4 px-2 sm:px-6 flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl clay-button flex items-center justify-center bg-[#ff0000]">
+                                <Icon.Microphone className="w-7 h-7 text-white drop-shadow-md" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-extrabold tracking-widest text-white drop-shadow-md">SVARAINA</h1>
+                                <span className="text-[11px] text-white/90 uppercase tracking-widest font-bold block bg-black/20 px-2 py-0.5 rounded mt-1 w-fit">Indonesian Text To Speech Studio</span>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="flex-1 flex flex-col lg:flex-row gap-6 relative z-10">
+                        <div className="flex-1 flex flex-col gap-6">
+                            
+                            <section className="clay-panel panel-coral p-6 md:p-8">
+                                <SectionHeader title="Your Story" icon={Icon.Megaphone} subtitle="Give your words a voice." />
+                                <div className="relative mt-2">
+                                    <textarea
+                                        value={narration}
+                                        onChange={(e) => setNarration(e.target.value)}
+                                        placeholder="Tulis atau tempel narasi Anda di sini..."
+                                        className="hero-textarea text-xl md:text-2xl font-bold leading-relaxed text-white placeholder-white/60"
+                                        spellCheck="false"
+                                    />
+                                    <div className="absolute -bottom-3 right-4 text-[10px] font-mono font-bold bg-black/20 px-3 py-1.5 rounded-lg shadow-inner text-white">
+                                        {narration.length.toLocaleString()} CHARS
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section className="clay-panel bg-[#f4f6f8] text-gray-800 p-6 border-4 border-white">
+                                <SectionHeader title="Bahasa / Logat" icon={Icon.SoundWave} subtitle="Pilih bahasa atau logat untuk narasi Anda." />
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+                                    {CONFIG.languages.map(lang => {
+                                        const isSelected = config.language === lang.id;
+                                        return (
+                                            <label key={lang.id} className="cursor-pointer flex h-full">
+                                                <input type="radio" name="langGroup" value={lang.id} checked={isSelected} onChange={() => updateConfig('language', lang.id)} className="hidden" />
+                                                <div className={`w-full clay-button py-4 px-2 flex items-center justify-center text-center text-sm font-extrabold transition-all duration-200 ${lang.panel} ${isSelected ? 'ring-4 ring-black/10 scale-105 shadow-clay-active opacity-100' : 'opacity-80 hover:opacity-100 hover:scale-105'}`}>
+                                                    {lang.label}
+                                                </div>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            </section>
+
+                            {}
+                            <section className="clay-panel bg-[#f4f6f8] text-gray-800 p-6 border-4 border-white">
+                                <SectionHeader title="Foreign Language" icon={Icon.SoundWave} subtitle="Pilih bahasa asing untuk narasi Anda." />
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
+                                    {CONFIG.foreignLanguages.map(lang => {
+                                        const isSelected = config.language === lang.id;
+                                        return (
+                                            <label key={lang.id} className="cursor-pointer flex h-full">
+                                                <input type="radio" name="langGroup" value={lang.id} checked={isSelected} onChange={() => updateConfig('language', lang.id)} className="hidden" />
+                                                <div className={`w-full clay-button py-4 px-2 flex items-center justify-center text-center text-sm font-extrabold transition-all duration-200 ${lang.panel} ${isSelected ? 'ring-4 ring-black/10 scale-105 shadow-clay-active opacity-100' : 'opacity-80 hover:opacity-100 hover:scale-105'}`}>
+                                                    {lang.label}
+                                                </div>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            </section>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <section className="clay-panel panel-navy p-6 flex flex-col">
+                                    <SectionHeader title="Voice Character" icon={Icon.Microphone} />
+                                    <div className="flex p-1 rounded-xl bg-black/20 mb-5 shadow-inner border border-white/5">
+                                        {['pria', 'wanita'].map(gender => (
+                                            <button 
+                                                key={gender}
+                                                onClick={() => {
+                                                    updateConfig('voiceGender', gender);
+                                                    updateConfig('voiceId', CONFIG.voices[gender][0].id);
+                                                }}
+                                                className={`flex-1 py-2 text-xs font-bold tracking-widest uppercase rounded-lg transition-all ${config.voiceGender === gender ? 'bg-white text-gray-900 shadow-md' : 'text-white/60 hover:text-white'}`}
+                                            >
+                                                {gender}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div className="flex flex-col gap-3 flex-1">
+                                        {CONFIG.voices[config.voiceGender].map(v => (
+                                            <label key={v.id} className={`flex items-center gap-4 p-3 rounded-xl cursor-pointer transition-all border-2 ${config.voiceId === v.id ? 'bg-white text-gray-900 border-transparent shadow-lg' : 'bg-black/10 border-transparent hover:bg-black/20'}`}>
+                                                <input type="radio" name="voice" value={v.id} checked={config.voiceId === v.id} onChange={() => updateConfig('voiceId', v.id)} className="hidden" />
+                                                <div className={`w-5 h-5 rounded-md border-2 flex-shrink-0 shadow-inner ${config.voiceId === v.id ? 'bg-clay-yellow border-transparent' : 'border-white/30 bg-black/20'}`}></div>
+                                                <div>
+                                                    <div className="text-sm font-extrabold">{v.name}</div>
+                                                    <div className={`text-[10px] font-mono mt-0.5 font-bold ${config.voiceId === v.id ? 'opacity-70' : 'opacity-50'}`}>{v.desc}</div>
+                                                </div>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                <section className="clay-panel panel-peach p-6 flex flex-col justify-between">
+                                    <div>
+                                        <SectionHeader title="Delivery & Vibe" icon={Icon.MusicNote} />
+                                        <div className="flex flex-wrap gap-3 mt-4 mb-6">
+                                            {CONFIG.vibes.map(v => (
+                                                <Chip 
+                                                    key={v.id} id={v.id} label={v.label} variant="light"
+                                                    selected={config.vibe === v.id} 
+                                                    onClick={(id) => updateConfig('vibe', id)} 
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="bg-black/10 p-5 rounded-xl shadow-inner border border-black/5 mt-auto">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <div className="text-[11px] font-extrabold tracking-widest uppercase opacity-80">Tempo</div>
+                                            <div className="text-xs font-mono font-bold bg-white text-gray-900 px-3 py-1 rounded-lg shadow-sm">{config.tempo.toFixed(1)}x</div>
+                                        </div>
+                                        <input 
+                                            type="range" min="0.5" max="2.0" step="0.1" 
+                                            value={config.tempo} 
+                                            onChange={(e) => updateConfig('tempo', parseFloat(e.target.value))}
+                                        />
+                                    </div>
+                                </section>
+                            </div>
+
+                            {}
+                            <section className="mt-2 mb-10">
+                                {errorMsg && (
+                                    <div className="mb-4 p-4 rounded-xl bg-red-100 text-red-600 text-sm font-bold border-2 border-red-200">
+                                        ⚠️ {errorMsg}
+                                    </div>
+                                )}
+                                {!isGenerating ? (
+                                    <button 
+                                        onClick={handleGenerate}
+                                        disabled={!narration.trim()}
+                                        className={`w-full py-6 text-xl font-extrabold tracking-widest uppercase transition-all clay-button 
+                                            ${!narration.trim() ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none' : 'btn-yellow shadow-[0_10px_20px_rgba(255,204,77,0.4)] text-gray-900'}`}
+                                    >
+                                        Generate Audio
+                                    </button>
+                                ) : (
+                                    <div className="py-10 flex flex-col items-center justify-center clay-panel panel-mint relative">
+                                        <div className="text-sm font-mono tracking-widest font-black text-clay-navy mb-6 drop-shadow-sm">PROCESSING AUDIO</div>
+                                        <div className="flex flex-col gap-3 items-center w-full max-w-sm">
+                                            {CONFIG.generationSteps.map((step, idx) => {
+                                                const isActive = step === currentStep;
+                                                const isPast = CONFIG.generationSteps.indexOf(currentStep) > idx;
+                                                return (
+                                                    <div key={step} className={`w-full text-center text-xs font-mono tracking-wider transition-all duration-300 rounded-xl py-2 px-4 
+                                                        ${isActive ? 'bg-white text-gray-900 scale-105 font-bold shadow-md border-2 border-clay-yellow' : 
+                                                          isPast ? 'bg-black/10 text-clay-navy/70 font-semibold border-2 border-transparent' : 'text-clay-navy/30'}`}>
+                                                        {step}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                                <AudioPlayer result={audioResult} title={audioResult ? (history.find(h => h.result === audioResult)?.title || "Generated Audio") : ""} />
+                            </section>
+
+                        </div>
+
+                        {}
+                        <aside className="w-full lg:w-80 flex-shrink-0">
+                            <div className="clay-panel bg-white/90 p-6 sticky top-8 text-gray-800 border-4 border-clay-mint">
+                                <SectionHeader title="Recent Takes" icon={Icon.SoundWave} />
+                                <div className="flex flex-col gap-4 mt-4">
+                                    {history.length === 0 ? (
+                                        <div className="text-center text-sm font-bold opacity-50 py-8">
+                                            Belum ada rekaman pada sesi ini.
+                                        </div>
+                                    ) : (
+                                        history.map(item => (
+                                            <div 
+                                                key={item.id} 
+                                                onClick={() => loadHistoryItem(item)}
+                                                className={`p-4 rounded-xl shadow-[inset_2px_2px_5px_rgba(0,0,0,0.05),4px_4px_8px_rgba(0,0,0,0.05)] cursor-pointer group transition-colors border border-gray-100 
+                                                    ${audioResult === item.result ? 'bg-clay-yellow border-clay-yellow' : 'bg-clay-light hover:bg-clay-yellow/50'}`}
+                                            >
+                                                <div className="text-sm font-extrabold truncate mb-1">{item.title}</div>
+                                                <div className="text-[10px] font-mono font-bold opacity-60 mb-3">{item.details}</div>
+                                                <div className="flex justify-between items-center text-[11px] font-mono font-bold border-t border-black/10 pt-3">
+                                                    <span className="bg-white px-2 py-1 rounded-md shadow-sm">MP3</span>
+                                                    <span className="flex items-center gap-1 opacity-70"><Icon.Play className="w-4 h-4" /> {item.durationStr}</span>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </aside>
+
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
